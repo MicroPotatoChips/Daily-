@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/daily_widget_task_row" android:layout_width="match_parent" android:layout_height="wrap_content"
+  android:minHeight="72dp" android:gravity="center_vertical" android:orientation="horizontal">
+  <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:paddingVertical="4dp" android:paddingEnd="6dp">
+    <TextView android:id="@+id/daily_widget_task_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:textSize="16sp" android:includeFontPadding="false" android:maxLines="1" android:ellipsize="end" />
+    <TextView android:id="@+id/daily_widget_task_value" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" android:textSize="13sp" android:includeFontPadding="false" android:maxLines="1" android:ellipsize="end" />
+    <LinearLayout android:id="@+id/daily_widget_task_timer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:visibility="gone">
+      <TextView android:id="@+id/daily_widget_task_status" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:textSize="12sp" android:includeFontPadding="false" android:maxLines="1" android:ellipsize="end" />
+      <Chronometer android:id="@+id/daily_widget_task_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingStart="6dp" android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" android:textSize="12sp" android:includeFontPadding="false" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/daily_widget_task_progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:progressTint="#39765C" android:progressBackgroundTint="#DCE7DE" />
+  </LinearLayout>
+  <TextView android:id="@+id/daily_widget_task_add" android:layout_width="48dp" android:layout_height="48dp" android:gravity="center" android:text="+" android:fontFamily="sans-serif-medium" android:textSize="13sp" android:includeFontPadding="false" android:background="@drawable/daily_widget_action" />
+  <TextView android:id="@+id/daily_widget_task_finish" android:layout_width="48dp" android:layout_height="48dp" android:layout_marginStart="4dp" android:gravity="center" android:text="✓" android:fontFamily="sans-serif-medium" android:textSize="20sp" android:includeFontPadding="false" android:visibility="gone" android:background="@drawable/daily_widget_action" />
+</LinearLayout>

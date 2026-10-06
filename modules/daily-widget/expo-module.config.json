@@ -1,0 +1,5 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": { "modules": ["DailyWidgetModule"] },
+  "android": { "modules": ["expo.modules.dailywidget.DailyWidgetModule"] }
+}

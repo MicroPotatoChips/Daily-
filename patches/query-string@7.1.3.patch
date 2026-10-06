@@ -1,0 +1,14 @@
+diff --git a/index.js b/index.js
+index d45e67d91d38c91d05e68e8b338e4bc2de591dcc..611de99bb12f7fa37adb80ecc22541039aba7633 100644
+--- a/index.js
++++ b/index.js
+@@ -1,6 +1,8 @@
+ 'use strict';
+ const strictUriEncode = require('strict-uri-encode');
+-const decodeComponent = require('decode-uri-component');
++// Security override uses decode-uri-component >=0.5 (ESM); preserve the CJS API.
++const decoderModule = require('decode-uri-component');
++const decodeComponent = decoderModule.default || decoderModule;
+ const splitOnFirst = require('split-on-first');
+ const filterObject = require('filter-obj');
+ 

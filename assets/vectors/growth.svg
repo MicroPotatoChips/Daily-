@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <title>Small habits grow</title>
+  <path fill="#E1EEE5" d="M99 290C63 246 120 191 165 151C210 112 233 65 300 65C364 65 383 126 444 150C507 175 532 229 500 278C469 326 407 338 330 331C234 323 143 344 99 290Z"/>
+  <circle cx="447" cy="80" r="37" fill="#E8B594"/>
+  <path d="M127 350C219 319 393 365 491 338M181 364C255 343 336 382 408 359" fill="none" stroke="#39765C" stroke-width="4" stroke-linecap="round" opacity=".3"/>
+  <path fill="#B8CC82" d="M121 168C108 187 98 201 100 214C103 240 139 240 143 214C145 200 132 181 121 168Z"/>
+  <path d="M111 207C107 217 115 225 122 225" fill="none" stroke="#F6F7F2" stroke-width="4" stroke-linecap="round"/>
+  <path fill="#F6F7F2" stroke="#C8DBC0" stroke-width="2" d="M219 252C246 236 350 236 377 252C389 291 387 335 360 349C336 363 258 363 235 347C211 330 207 287 219 252Z"/>
+  <ellipse cx="298" cy="252" rx="69" ry="11" fill="#4C5140"/>
+  <path fill="#B8CC82" d="M302 184C257 158 223 130 250 57C255 44 268 49 282 54C344 74 365 125 329 163Z"/>
+  <path fill="#39765C" d="M290 217C281 189 257 176 224 176C174 177 150 145 153 111C195 95 265 129 279 164C287 183 287 197 290 217Z"/>
+  <path fill="#88A87A" d="M309 228C325 184 351 153 389 157C411 159 424 166 437 174C425 215 384 233 350 227C334 224 322 225 309 228Z"/>
+  <path d="M300 252C309 205 323 139 274 89M301 252C292 210 254 159 189 133M301 252C323 207 367 180 400 180" fill="none" stroke="#245C46" stroke-width="5" stroke-linecap="round"/>
+  <path d="M298 280V328M274 304H322" stroke="#39765C" stroke-width="19" stroke-linecap="round"/>
+  <circle cx="477" cy="297" r="5" fill="#B8CC82"/>
+</svg>

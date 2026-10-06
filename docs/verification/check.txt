@@ -1,0 +1,60 @@
+$ npm run typecheck && npm run lint && npm test
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> daily-plus@1.1.0 typecheck
+> tsc --noEmit
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> daily-plus@1.1.0 lint
+> eslint .
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> daily-plus@1.1.0 test
+> node --import tsx --test tests/*.test.ts
+
+✔ schema migrations are durable, versioned, idempotent, and contain no demo data (7.762829ms)
+✔ a newer schema fails safely and initialization can be retried (1.453468ms)
+✔ local date keys do not accidentally use the UTC calendar day (2.100507ms)
+✔ task creation saves reminder and a dated baseline revision (1.8916ms)
+✔ invalid tasks and inconsistent timer units are rejected (0.499015ms)
+✔ record operation IDs are idempotent under concurrent retries (2.271335ms)
+✔ manual corrections persist while preventing a negative daily total (2.892434ms)
+✔ goals and repeat days use the revision effective on the selected date (1.343602ms)
+✔ same-day edits replace the dated revision without duplicating it (0.884949ms)
+✔ tracking type and unit changes cannot corrupt existing activity (0.987063ms)
+✔ archiving keeps records and historical schedules, and restore preserves the archived gap (2.142179ms)
+✔ completion rates and all heatmap buckets come from durable records (1.000232ms)
+✔ running timers recover elapsed time after five minutes away without UI intervals (1.717187ms)
+✔ pause and resume exclude background pause time and survive repository recreation (1.286505ms)
+✔ a timer crossing midnight writes each local day and excludes paused gaps (7.081138ms)
+✔ a contiguous segment is split at local midnight and timestamps match their date (0.257169ms)
+✔ midnight splitting follows 23-hour and 25-hour daylight-saving days (0.602491ms)
+✔ timezone changes preserve saved calendar keys while new records use the current local day (1.042836ms)
+✔ concurrent Finish retries are atomic and create only one timer record (1.238082ms)
+✔ a failed timer record write rolls back Finish and a retry commits once (1.130209ms)
+✔ archiving finishes an active timer in the archive transaction (1.062818ms)
+✔ settings, tasks, records, and a running timer survive closing and reopening the SQLite file (2.460371ms)
+✔ decimal corrections can reach zero without being rejected by floating-point residue (1.067845ms)
+✔ non-finite and oversized inputs cannot poison saved activity or timers (1.241667ms)
+✔ backward clock changes do not create overlapping committed timer segments (1.462071ms)
+✔ indexed history matches direct totals for corrections, revisions and unscheduled activity (1.716805ms)
+✔ English and Chinese cover the same page strings (2.187528ms)
+✔ English and Chinese cover the same shared component strings (0.420125ms)
+✔ widget snapshot sums real records, retains revisions, and omits archived tasks (1.29624ms)
+✔ reminders use selected weekdays and are removed on archive or disable (0.827491ms)
+✔ interval reminders avoid overnight delivery and respect the global OS budget (0.633888ms)
+✔ Android prebuild copies native provider/resources and manifest changes are idempotent (3.57772ms)
+✔ iOS prebuild produces a parsed, embedded, signed widget target once (13.046548ms)
+✔ deep-link quick add is an explicit, bounded proposal with a separate operation namespace (1.643516ms)
+✔ patched router query parser preserves Unicode and duplicate parameter semantics (18.451361ms)
+✔ malformed percent-encoded routes complete without unbounded decoder recursion (83.301145ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 409.205636

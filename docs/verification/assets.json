@@ -1,0 +1,38 @@
+[
+  {
+    "name": "icon",
+    "width": 1024,
+    "height": 1024,
+    "alpha": false
+  },
+  {
+    "name": "icon-dark",
+    "width": 1024,
+    "height": 1024,
+    "alpha": false
+  },
+  {
+    "name": "adaptive-icon",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true
+  },
+  {
+    "name": "monochrome-icon",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true
+  },
+  {
+    "name": "splash",
+    "width": 720,
+    "height": 720,
+    "alpha": true
+  },
+  {
+    "name": "splash-dark",
+    "width": 720,
+    "height": 720,
+    "alpha": true
+  }
+]

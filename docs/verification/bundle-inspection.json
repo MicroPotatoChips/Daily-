@@ -1,0 +1,27 @@
+[
+  {
+    "platform": "android",
+    "file": "index-af0afa03b6aab496e6d99bdf7dc51584.hbc.map",
+    "nodeForgeSourceCount": 0
+  },
+  {
+    "platform": "ios",
+    "file": "index-ee2527e01fc4fd8a1eeaeae4f87c272c.hbc.map",
+    "nodeForgeSourceCount": 0
+  },
+  {
+    "platform": "web",
+    "file": "index-17845361cc1202942c8932c383dd23b3.js.map",
+    "nodeForgeSourceCount": 0
+  },
+  {
+    "platform": "web",
+    "file": "index-e0e212980557aa3f99dc0f6e36b25ca5.js.map",
+    "nodeForgeSourceCount": 0
+  },
+  {
+    "platform": "web",
+    "file": "worker-d4bdf6b63c9ea939d4d0c47ec1a929de.js.map",
+    "nodeForgeSourceCount": 0
+  }
+]

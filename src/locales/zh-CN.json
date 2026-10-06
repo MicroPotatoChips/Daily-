@@ -1,0 +1,28 @@
+{
+  "nav": { "home": "首页", "history": "历史" },
+  "common": { "retry": "重试", "back": "返回", "cancel": "取消", "save": "保存", "done": "完成" },
+  "error": {
+    "title": "暂时遇到一点问题",
+    "message": "数据仍保存在这台设备上，请重试。",
+    "database": "暂时无法打开每日记录，请重试。"
+  },
+  "task": { "completed": "已完成", "quickAdd": "为{{name}}记录一次" },
+  "history": { "less": "少", "more": "多" },
+  "timer": {
+    "start": "开始",
+    "pause": "暂停",
+    "resume": "继续",
+    "finish": "结束",
+    "running": "留一点时间给自己",
+    "paused": "稍作休息",
+    "ready": "开始一段专注时光",
+    "backgroundHint": "离开应用后，计时仍会继续。"
+  },
+  "units": { "cups": "杯", "times": "次", "pages": "页", "ml": "毫升", "min": "分钟" },
+  "notifications": {
+    "channel": "习惯提醒",
+    "title": "今天的小小进步",
+    "body": "给{{name}}留一点时间。",
+    "permissionDenied": "请在系统设置中允许通知，以接收提醒。"
+  }
+}

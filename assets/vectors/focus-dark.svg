@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <title>A little time for yourself</title>
+  <path fill="#2B4635" d="M82 233C93 190 170 176 210 129C253 77 310 57 369 80C426 102 432 150 479 193C520 230 530 278 487 301C435 330 355 320 302 326C211 337 67 300 82 233Z"/>
+  <path fill="#8CCBA6" d="M195 213C177 175 136 177 132 132C130 111 135 89 140 74C187 103 206 138 195 213Z"/>
+  <path fill="#B8CC82" d="M196 213C194 174 207 134 229 111C253 151 242 182 196 213Z"/>
+  <path d="M196 263C192 210 182 162 153 126M195 218L226 153" stroke="#65AA85" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path fill="#617F63" stroke="#263B2F" stroke-width="4" d="M421 159L430 303C430 321 504 321 505 303L514 159Z"/>
+  <path fill="#638D91" d="M426 208C441 201 493 201 510 208L505 302C501 316 433 316 430 302Z"/>
+  <ellipse cx="468" cy="208" rx="42" ry="9" fill="#90B8B8"/>
+  <ellipse cx="468" cy="159" rx="46" ry="9" fill="none" stroke="#263B2F" stroke-width="4"/>
+  <path d="M437 181L442 247" stroke="#263B2F" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+  <path fill="#72946D" d="M125 269L325 244L446 283L238 326L125 300Z"/>
+  <path fill="#617F63" d="M125 269C105 276 106 322 126 329L239 362L447 325L447 283L238 318Z"/>
+  <path fill="#263B2F" d="M248 321L441 291V326L247 355C236 346 236 330 248 321Z"/>
+  <path d="M253 332L428 305M253 344L428 317" stroke="#506C54" stroke-width="2"/>
+  <path d="M128 286C120 296 121 312 127 317M139 290C134 300 134 312 139 321" fill="none" stroke="#8CCBA6" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="289" cy="273" rx="69" ry="10" fill="#8CCBA6" opacity=".15"/>
+  <circle cx="292" cy="198" r="82" fill="#D8A37C"/>
+  <circle cx="292" cy="198" r="68" fill="#263B2F"/>
+  <g fill="none" stroke="#8CCBA6" stroke-linecap="round">
+    <path d="M292 143V153M292 243V253M237 198H247M337 198H347M253 159L260 166M324 230L331 237M253 237L260 230" stroke-width="3"/>
+    <path d="M292 198L321 154" stroke-width="8"/>
+  </g>
+  <circle cx="292" cy="198" r="8" fill="#8CCBA6"/>
+  <path fill="#8CCBA6" d="M415 336C441 297 485 322 527 285C523 344 479 359 449 347C437 342 427 338 415 336Z"/>
+  <path d="M403 349C440 326 480 345 512 309" stroke="#65AA85" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M96 177V199M85 188H107M500 97V119M489 108H511" stroke="#B8CC82" stroke-width="7" stroke-linecap="round"/>
+</svg>

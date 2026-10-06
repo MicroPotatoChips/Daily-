@@ -1,0 +1,34 @@
+{
+  "nav": { "home": "Home", "history": "History" },
+  "common": {
+    "retry": "Try again",
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "done": "Done"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "Your data is still on this device. Please try again.",
+    "database": "We couldn’t open your daily journal. Please try again."
+  },
+  "task": { "completed": "Completed", "quickAdd": "Add one to {{name}}" },
+  "history": { "less": "Less", "more": "More" },
+  "timer": {
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "finish": "Finish",
+    "running": "Time for yourself",
+    "paused": "Take a little pause",
+    "ready": "Make a little time",
+    "backgroundHint": "Your timer keeps going when you leave the app."
+  },
+  "units": { "cups": "cups", "times": "times", "pages": "pages", "ml": "ml", "min": "min" },
+  "notifications": {
+    "channel": "Habit reminders",
+    "title": "A small step for today",
+    "body": "A small moment for {{name}}.",
+    "permissionDenied": "Allow notifications in your device settings to receive reminders."
+  }
+}
