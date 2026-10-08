@@ -1,3 +1,11 @@
+# 1.2.1 — 2026-10-08
+
+- Make the floating bottom tab container transparent on both platforms, remove Android elevation and keep the rounded glass background inside the bar. Tab scenes use the current app background.
+- Redesign Android and iOS widgets with a daily completion badge, rounded habit cards, clearer saved progress, timer status and direct action buttons.
+- Adapt visible rows to widget size and font scale; keep timer controls reachable and provide matching light/dark progress tracks.
+- Update app and native widget versions to 1.2.1, with app build number/version code 3.
+- Validation: TypeScript no-emit, ESLint and 42 existing tests pass; Android XML/resource references and iOS background JSON checks pass. No prebuild, export, native compilation or build.
+
 # 1.2.0 — 2026-10-03
 
 - Home habit cards now start, pause, resume and finish timers directly, including active timers on rest days. Paused timers show their actual status and a frozen clock.

@@ -1,6 +1,6 @@
 {
   "name": "daily-widget",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "main": "index.ts",
   "description": "Daily+ local Expo module for native home-screen widgets"

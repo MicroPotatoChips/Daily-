@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
 
 group = 'expo.modules.dailywidget'
-version = '1.2.0'
+version = '1.2.1'
 
 android {
   namespace 'expo.modules.dailywidget'
   defaultConfig {
     versionCode 1
-    versionName '1.2.0'
+    versionName '1.2.1'
   }
 }

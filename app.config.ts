@@ -2,20 +2,20 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Daily+',
   slug: 'daily-plus',
-  version: '1.2.0',
+  version: '1.2.1',
   scheme: 'dailyplus',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: {
     supportsTablet: true,
-    buildNumber: '2',
+    buildNumber: '3',
     bundleIdentifier: 'com.dailyplus.app',
     icon: { light: './assets/icon.png', dark: './assets/icon-dark.png' },
   },
   android: {
     package: 'com.dailyplus.app',
-    versionCode: 2,
+    versionCode: 3,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       monochromeImage: './assets/monochrome-icon.png',

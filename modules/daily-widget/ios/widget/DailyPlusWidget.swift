@@ -161,93 +161,176 @@ func taskSymbol(_ icon: String) -> String {
 struct DailyWidgetView: View {
   @Environment(\.widgetFamily) var family
   @Environment(\.colorScheme) var colorScheme
+  @Environment(\.dynamicTypeSize) var dynamicTypeSize
+  @ScaledMetric(relativeTo: .caption) private var compactTitleSize: CGFloat = 13
+  @ScaledMetric(relativeTo: .subheadline) private var regularTitleSize: CGFloat = 15
+  @ScaledMetric(relativeTo: .caption2) private var progressTextSize: CGFloat = 11
+  @ScaledMetric(relativeTo: .caption2) private var timerTextSize: CGFloat = 10
   var entry: DailyEntry
+
   private var compact: Bool { family == .systemMedium }
   private var chinese: Bool { entry.snapshot.chinese }
   private var dark: Bool { entry.snapshot.theme == "dark" || (entry.snapshot.theme == "system" && colorScheme == .dark) }
   private var primaryText: Color { Color(widgetHex: dark ? "#EFF5EC" : "#24352B") }
   private var secondaryText: Color { Color(widgetHex: dark ? "#AFBEB2" : "#67766D") }
+  private var primary: Color { Color(widgetHex: dark ? "#8CCBA6" : "#39765C") }
+  private var surface: Color { Color(widgetHex: dark ? "#1F2B23" : "#FFFFFF") }
+  private var track: Color { Color(widgetHex: dark ? "#28372D" : "#EEF1E9") }
+  private var buttonText: Color { Color(widgetHex: dark ? "#13291C" : "#FFFFFF") }
+  private var directActionsAvailable: Bool {
+    if #available(iOSApplicationExtension 17.0, *) { return true }
+    return false
+  }
+  private var showNotice: Bool { !entry.available || entry.failed || !directActionsAvailable }
   private var visibleTasks: [WidgetTask] {
     let tasks = entry.tasks.filter { $0.timer != nil } + entry.tasks.filter { $0.timer == nil }
     let limit: Int
-    if !compact { limit = 4 }
-    else if #available(iOSApplicationExtension 17.0, *) { limit = entry.available && !entry.failed ? 2 : 1 }
-    else { limit = 1 }
+    if compact { limit = showNotice || dynamicTypeSize > .large ? 1 : 2 }
+    else if dynamicTypeSize.isAccessibilitySize { limit = 2 }
+    else { limit = showNotice || dynamicTypeSize > .large ? 3 : 4 }
     return Array(tasks.prefix(limit))
   }
-  private var remaining: Int { entry.tasks.count - visibleTasks.count }
+  private var remaining: Int { max(0, entry.tasks.count - visibleTasks.count) }
+
   var body: some View {
-    VStack(alignment: .leading, spacing: compact ? 3 : 10) {
-      HStack {
-        Text("Daily+").font(.system(size: 19, weight: .semibold, design: .default))
-        Spacer()
-        Text("\(entry.completed)/\(entry.tasks.count)").font(.system(size: 13, weight: .medium)).monospacedDigit()
-        Text((chinese ? "今天" : "Today") + (remaining > 0 ? " · +\(remaining)" : ""))
-          .font(.system(size: 13, weight: .medium)).foregroundStyle(secondaryText)
-      }
+    VStack(alignment: .leading, spacing: compact ? 6 : 8) {
+      header
       if !entry.available || entry.failed {
-        Text(entry.failed ? (chinese ? "未保存，请重试" : "Not saved. Please retry") : (chinese ? "请先打开 Daily+ 初始化" : "Open Daily+ once to set up"))
-          .font(.system(size: 12)).foregroundStyle(secondaryText)
+        Text(entry.failed ? (chinese ? "未保存，点击操作重试" : "Not saved. Tap an action to retry") : (chinese ? "打开 Daily+ 完成初始化" : "Open Daily+ to finish setup"))
+          .font(.system(size: 11, design: .default)).foregroundStyle(secondaryText).lineLimit(2)
       }
       if entry.tasks.isEmpty {
-        Text(chinese ? "打开 Daily+，创建第一个任务" : "Open Daily+ to create your first task")
-          .font(.system(size: 16)).foregroundStyle(secondaryText)
-        Spacer(minLength: 0)
+        emptyState
       } else {
-        VStack(alignment: .leading, spacing: compact ? 3 : 10) {
+        VStack(alignment: .leading, spacing: compact ? 6 : 7) {
           ForEach(visibleTasks) { task in taskRow(task) }
         }
-        if !compact { Spacer(minLength: 0) }
       }
       if #unavailable(iOSApplicationExtension 17.0) {
-        Text(chinese ? "直接操作需要 iOS 17" : "Direct actions require iOS 17").font(.system(size: 12)).foregroundStyle(secondaryText)
+        Text(chinese ? "iOS 17 起支持直接操作" : "Direct actions require iOS 17")
+          .font(.system(size: 11, design: .default)).foregroundStyle(secondaryText).lineLimit(2)
       }
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .preferredColorScheme(entry.snapshot.theme == "dark" ? .dark : entry.snapshot.theme == "light" ? .light : nil)
     .foregroundStyle(primaryText)
     .widgetURL(URL(string: "dailyplus://"))
     .modifier(WidgetSurface())
   }
+
+  private var header: some View {
+    HStack(spacing: 6) {
+      Text("Daily+").font(.system(size: compact ? 16 : 18, weight: .semibold, design: .default))
+      Spacer(minLength: 4)
+      HStack(spacing: 4) {
+        Image(systemName: "checkmark.circle.fill").foregroundStyle(primary)
+        Text(chinese ? "今日完成" : "Today")
+        Text("\(entry.completed)/\(entry.tasks.count)").monospacedDigit()
+      }
+      .font(.system(size: 11, weight: .medium, design: .default))
+      .padding(.horizontal, 7).padding(.vertical, 4)
+      .background(track, in: Capsule())
+      .accessibilityElement(children: .ignore)
+      .accessibilityLabel(chinese ? "今日已完成 \(entry.completed) 项，共 \(entry.tasks.count) 项" : "\(entry.completed) of \(entry.tasks.count) habits completed today")
+      if remaining > 0 {
+        Text("+\(remaining)").font(.system(size: 10, weight: .medium)).foregroundStyle(secondaryText)
+          .accessibilityLabel(chinese ? "还有 \(remaining) 项" : "\(remaining) more habits")
+      }
+    }
+  }
+
+  private var emptyState: some View {
+    VStack(spacing: 6) {
+      Spacer(minLength: 0)
+      Image(systemName: "leaf.fill").font(.system(size: compact ? 24 : 30)).foregroundStyle(primary)
+      Text(chinese ? "今天，从一个小习惯开始" : "Start with one small habit")
+        .font(.subheadline.weight(.semibold)).multilineTextAlignment(.center)
+      Text(chinese ? "打开 Daily+ 添加你的第一个习惯" : "Open Daily+ to add your first habit")
+        .font(.caption).foregroundStyle(secondaryText).multilineTextAlignment(.center)
+      Spacer(minLength: 0)
+    }.frame(maxWidth: .infinity)
+  }
+
   private func taskRow(_ task: WidgetTask) -> some View {
     let value = task.value(on: entry.date)
     let target = max(0.000001, task.target(on: entry.date))
-    let accent = Color(widgetHex: dark ? "#8CCBA6" : task.color)
+    let progress = min(1, max(0, value / target))
+    let accent = Color(widgetHex: task.color)
     let encoded = task.id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "/?#"))) ?? task.id
-    return HStack(spacing: 8) {
+    return HStack(spacing: 6) {
       Link(destination: URL(string: "dailyplus://task/\(encoded)")!) {
-        VStack(alignment: .leading, spacing: 1) {
-          HStack(spacing: 4) {
-            Image(systemName: value >= target ? "checkmark.circle.fill" : taskSymbol(task.icon)).foregroundStyle(accent)
-            Text(task.name).foregroundStyle(primaryText).lineLimit(1)
-          }.font(.system(size: compact ? 14 : 16, weight: .semibold, design: .default))
-          Text("\(value.formatted(.number.precision(.fractionLength(0...1)))) / \(target.formatted(.number.precision(.fractionLength(0...1)))) \(unit(task.unit))")
-            .font(.system(size: compact ? 12 : 13, weight: .medium)).monospacedDigit().foregroundStyle(secondaryText).lineLimit(1).minimumScaleFactor(0.8)
-          if let timer = task.timer {
-            HStack(spacing: 5) {
-              Text(timer.status == "running" ? (chinese ? "计时中" : "Running") : (chinese ? "已暂停" : "Paused"))
-              if timer.status == "running" {
-                Text(entry.date.addingTimeInterval(-timer.elapsed(at: entry.date)), style: .timer).monospacedDigit()
-              } else {
-                Text("\(Int(timer.duration / 60000)):\(String(format: "%02d", Int(timer.duration / 1000) % 60))").monospacedDigit()
+        HStack(spacing: 7) {
+          Image(systemName: taskSymbol(task.icon))
+            .font(.system(size: compact ? 14 : 16, weight: .semibold))
+            .foregroundStyle(accent)
+            .frame(width: compact ? 28 : 32, height: compact ? 28 : 32)
+            .background(accent.opacity(dark ? 0.18 : 0.10), in: RoundedRectangle(cornerRadius: 10))
+          VStack(alignment: .leading, spacing: 1) {
+            Text(task.name).font(.system(size: compact ? min(compactTitleSize, 24) : min(regularTitleSize, 30), weight: .semibold, design: .default))
+              .foregroundStyle(primaryText).lineLimit(1).truncationMode(.tail)
+            Text("\(value.formatted(.number.precision(.fractionLength(0...1)))) / \(target.formatted(.number.precision(.fractionLength(0...1)))) \(unit(task.unit))")
+              .font(.system(size: min(progressTextSize, compact ? 16 : 18), weight: .medium, design: .default))
+              .monospacedDigit().foregroundStyle(secondaryText).lineLimit(1).minimumScaleFactor(0.8)
+            if let timer = task.timer {
+              timerStatus(timer)
+            } else {
+              GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                  Capsule().fill(track)
+                  Capsule().fill(accent).frame(width: geometry.size.width * CGFloat(progress))
+                }
               }
-            }.font(.system(size: compact ? 11 : 12, weight: .medium)).foregroundStyle(timer.status == "running" ? accent : secondaryText).lineLimit(1)
-          }
-          if !compact || task.timer == nil {
-            ProgressView(value: min(1, max(0, value / target))).tint(accent)
+              .frame(height: compact ? 3 : 4)
+              .padding(.top, 2)
+              .accessibilityElement(children: .ignore)
               .accessibilityLabel(chinese ? "完成度" : "Progress")
-              .accessibilityValue("\(Int(min(100, max(0, value / target * 100))))%")
-          }
-        }.frame(maxWidth: .infinity, alignment: .leading)
-      }.buttonStyle(.plain)
+              .accessibilityValue("\(Int(progress * 100))%")
+            }
+          }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityElement(children: .combine)
+      .accessibilityHint(chinese ? "打开习惯详情" : "Open habit details")
       if #available(iOSApplicationExtension 17.0, *) {
         HStack(spacing: 4) {
           let command = task.trackingType == "count" ? "add" : task.timer == nil ? "start" : task.timer?.status == "running" ? "pause" : "resume"
           actionButton(task, command: command, symbol: command == "add" ? "plus" : command == "pause" ? "pause.fill" : "play.fill")
           if task.timer != nil { actionButton(task, command: "finish", symbol: "checkmark") }
-        }
+        }.fixedSize(horizontal: true, vertical: false)
       }
     }
+    .padding(.horizontal, 8).padding(.vertical, compact ? 3 : 5)
+    .frame(minHeight: compact ? 52 : 60)
+    .background(surface, in: RoundedRectangle(cornerRadius: compact ? 14 : 16))
+    .overlay {
+      RoundedRectangle(cornerRadius: compact ? 14 : 16).stroke(primary.opacity(dark ? 0.08 : 0.04), lineWidth: 0.75)
+    }
   }
+
+  private func timerStatus(_ timer: WidgetTimer) -> some View {
+    HStack(spacing: 4) {
+      Circle().fill(timer.status == "running" ? primary : secondaryText).frame(width: 4, height: 4)
+      Text(timer.status == "running" ? (chinese ? "计时中" : "Running") : (chinese ? "已暂停" : "Paused"))
+      if timer.status == "running" {
+        Text(entry.date.addingTimeInterval(-timer.elapsed(at: entry.date)), style: .timer).monospacedDigit()
+      } else {
+        Text(pausedTime(timer.duration)).monospacedDigit()
+      }
+    }
+    .font(.system(size: min(timerTextSize, compact ? 14 : 16), weight: .medium, design: .default))
+    .foregroundStyle(timer.status == "running" ? primary : secondaryText)
+    .lineLimit(1).minimumScaleFactor(0.8)
+  }
+
+  private func pausedTime(_ duration: Double) -> String {
+    let seconds = Int(max(0, duration) / 1000)
+    if seconds >= 3600 { return String(format: "%d:%02d:%02d", seconds / 3600, seconds / 60 % 60, seconds % 60) }
+    return String(format: "%d:%02d", seconds / 60, seconds % 60)
+  }
+
   private func unit(_ value: String) -> String {
     guard chinese else { return value }
     switch value {
@@ -259,22 +342,28 @@ struct DailyWidgetView: View {
     default: return value
     }
   }
+
   @available(iOSApplicationExtension 17.0, *)
   private func actionButton(_ task: WidgetTask, command: String, symbol: String) -> some View {
     let label: String
+    let visibleLabel: String
     switch command {
-    case "add": label = chinese ? "加一" : "Add one"
-    case "pause": label = chinese ? "暂停" : "Pause"
-    case "resume": label = chinese ? "继续" : "Resume"
-    case "finish": label = chinese ? "结束并保存" : "Finish and save"
-    default: label = chinese ? "开始" : "Start"
+    case "add": label = chinese ? "加一" : "Add one"; visibleLabel = "+1"
+    case "pause": label = chinese ? "暂停" : "Pause"; visibleLabel = label
+    case "resume": label = chinese ? "继续" : "Resume"; visibleLabel = label
+    case "finish": label = chinese ? "结束并保存" : "Finish and save"; visibleLabel = chinese ? "完成" : "Save"
+    default: label = chinese ? "开始" : "Start"; visibleLabel = label
     }
     return Button(intent: DailyActionIntent(task: task, action: command, operation: "\(entry.operation):\(task.id):\(command)")) {
-      Image(systemName: symbol).font(.system(size: 17, weight: .semibold))
-        .frame(width: 44, height: 44)
-        .background(Color(widgetHex: dark ? "#2B4635" : "#E1EEE5"), in: RoundedRectangle(cornerRadius: 16))
+      VStack(spacing: 2) {
+        Image(systemName: symbol).font(.system(size: 13, weight: .semibold))
+        Text(visibleLabel).font(.system(size: 10, weight: .semibold, design: .default)).lineLimit(1)
+      }
+      .frame(width: 44).frame(minHeight: 44)
+      .foregroundStyle(command == "finish" ? primary : buttonText)
+      .background(command == "finish" ? primary.opacity(dark ? 0.14 : 0.10) : primary, in: RoundedRectangle(cornerRadius: 12))
     }
-    .buttonStyle(.plain).tint(Color(widgetHex: dark ? "#8CCBA6" : task.color)).disabled(!entry.available)
+    .buttonStyle(.plain).disabled(!entry.available).opacity(entry.available ? 1 : 0.45)
     .accessibilityLabel("\(label) \(task.name)")
   }
 }

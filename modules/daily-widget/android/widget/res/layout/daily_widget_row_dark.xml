@@ -11,7 +11,7 @@
       <TextView android:id="@+id/daily_widget_task_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:fontFamily="sans-serif-medium" android:textSize="11sp" android:includeFontPadding="false" android:maxLines="1" android:ellipsize="end" />
       <Chronometer android:id="@+id/daily_widget_task_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" android:textSize="12sp" android:includeFontPadding="false" android:maxLines="1" />
         </LinearLayout>
-        <ProgressBar android:id="@+id/daily_widget_task_progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="3dp" android:layout_marginTop="6dp" android:progressDrawable="@drawable/daily_widget_progress" />
+        <ProgressBar android:id="@+id/daily_widget_task_progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="3dp" android:layout_marginTop="6dp" android:progressDrawable="@drawable/daily_widget_progress_dark" />
       </LinearLayout>
     </LinearLayout>
     <TextView android:id="@+id/daily_widget_task_add" android:layout_width="52dp" android:layout_height="48dp" android:gravity="center" android:text="+1" android:maxLines="1" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:textSize="13sp" android:includeFontPadding="false" android:background="@drawable/daily_widget_action" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="8sp" android:autoSizeMaxTextSize="13sp" android:autoSizeStepGranularity="1sp" />

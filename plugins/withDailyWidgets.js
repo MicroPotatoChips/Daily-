@@ -274,7 +274,7 @@ function withDailyWidgets(config, options = {}) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withDailyWidgets, 'daily-plus-widgets', '1.2.0');
+module.exports = createRunOncePlugin(withDailyWidgets, 'daily-plus-widgets', '1.2.1');
 module.exports.helpers = {
   addWidgetTarget,
   applyAndroidManifest,

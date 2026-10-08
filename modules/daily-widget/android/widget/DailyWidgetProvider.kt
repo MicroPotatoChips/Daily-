@@ -78,11 +78,13 @@ class DailyWidgetProvider : AppWidgetProvider() {
     }
     val text = Color.parseColor(if (dark) "#EFF5EC" else "#24352B")
     val secondary = Color.parseColor(if (dark) "#AFBEB2" else "#67766D")
+    val primary = Color.parseColor(if (dark) "#8CCBA6" else "#39765C")
     val views = RemoteViews(context.packageName, R.layout.daily_widget)
     views.setInt(R.id.daily_widget_root, "setBackgroundResource", if (dark) R.drawable.daily_widget_background_dark else R.drawable.daily_widget_background)
     views.setTextColor(R.id.daily_widget_title, text)
     views.setTextColor(R.id.daily_widget_today, secondary)
-    views.setTextColor(R.id.daily_widget_summary, secondary)
+    views.setTextColor(R.id.daily_widget_summary, primary)
+    views.setInt(R.id.daily_widget_summary, "setBackgroundResource", if (dark) R.drawable.daily_widget_summary_dark else R.drawable.daily_widget_summary)
     views.setTextColor(R.id.daily_widget_empty, secondary)
     views.setTextColor(R.id.daily_widget_more, secondary)
     views.setTextViewText(R.id.daily_widget_today, if (chinese) "今天" else "Today")
@@ -111,29 +113,62 @@ class DailyWidgetProvider : AppWidgetProvider() {
     views.setViewVisibility(R.id.daily_widget_empty, if (scheduled.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE)
     views.setTextViewText(R.id.daily_widget_empty, if (chinese) "打开 Daily+，创建第一个任务" else "Open Daily+ to create your first task")
     views.setOnClickPendingIntent(R.id.daily_widget_root, openTask(context, "dailyplus://", widgetId))
-    // Use the smaller orientation height and respect the system font scale so controls stay visible.
-    val height = manager.getAppWidgetOptions(widgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 320).let { if (it > 0) it else 320 }
+    // Budget each card against the smallest orientation and the current text size.
+    val options = manager.getAppWidgetOptions(widgetId)
+    val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 320).let { if (it > 0) it else 320 }
+    val width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 250).let { if (it > 0) it else 250 }
     val fontScale = context.resources.configuration.fontScale.coerceAtLeast(1f)
-    val rowHeight = 14 + 58 * fontScale
-    val rowLimit = ((height - 28 - 64 * fontScale) / rowHeight).toInt().coerceIn(1, 8)
-    val visible = scheduled.sortedBy { if (it.optJSONObject("timer") != null) 0 else 1 }.take(rowLimit)
+    val compact = width < 320 * fontScale
+    val showIcon = width >= 260 * fontScale
+    // Short widgets put overflow in the header, retaining room for a 130dp active card.
+    val shortHeight = height < 260 * fontScale
+    val footerHeight = if (shortHeight) 0f else 18 * fontScale
+    val bodyHeight = (height - 28 - (31 * fontScale + 29) - footerHeight).coerceAtLeast(0f)
+    val visible = mutableListOf<JSONObject>()
+    var usedHeight = 0f
+    for (task in scheduled.sortedBy { if (it.optJSONObject("timer") != null) 0 else 1 }) {
+      val active = task.optJSONObject("timer") != null
+      val topHeight = maxOf(48f, 36 * fontScale + 12)
+      val cardHeight = if (compact && active) topHeight + maxOf(48f, 30 * fontScale) + 34
+        else maxOf(72f, maxOf(48f, (if (active) 55 else 36) * fontScale + (if (active) 18 else 12)) + 20) + 6
+      if (visible.size >= 8 || usedHeight + cardHeight > bodyHeight) break
+      visible.add(task)
+      usedHeight += cardHeight
+    }
     val remaining = scheduled.size - visible.size
-    views.setViewVisibility(R.id.daily_widget_more, if (remaining > 0) android.view.View.VISIBLE else android.view.View.GONE)
+    views.setViewVisibility(R.id.daily_widget_more, if (remaining > 0 && !shortHeight) android.view.View.VISIBLE else android.view.View.GONE)
+    views.setTextViewText(R.id.daily_widget_today, (if (chinese) "今天" else "Today") + if (shortHeight && remaining > 0) " · +$remaining" else "")
     views.setTextViewText(R.id.daily_widget_more, if (chinese) "还有 $remaining 项 · 打开应用" else "$remaining more · Open app")
+    if (scheduled.isNotEmpty() && visible.isEmpty()) {
+      views.setViewVisibility(R.id.daily_widget_empty, android.view.View.VISIBLE)
+      views.setTextViewText(R.id.daily_widget_empty, if (chinese) "放大小组件，显示习惯与计时操作" else "Resize to show habits and timer controls")
+      views.setViewVisibility(R.id.daily_widget_more, android.view.View.GONE)
+    }
     visible.forEachIndexed { index, task ->
       val id = task.optString("id")
       val goal = (latestRevision(task, date)?.optDouble("goal") ?: task.optDouble("goal", 1.0)).coerceAtLeast(0.000001)
       val value = task.optJSONObject("values")?.optDouble(date, 0.0) ?: 0.0
       val complete = value >= goal
-      val row = RemoteViews(context.packageName, R.layout.daily_widget_row)
-      val accent = if (dark) Color.parseColor("#8CCBA6") else try { Color.parseColor(task.optString("color", "#39765C")) } catch (_: Exception) { Color.parseColor("#39765C") }
-      row.setTextViewText(R.id.daily_widget_task_name, task.optString("name"))
+      val rowLayout = if (compact) {
+        if (dark) R.layout.daily_widget_row_compact_dark else R.layout.daily_widget_row_compact
+      } else if (dark) R.layout.daily_widget_row_dark else R.layout.daily_widget_row
+      val row = RemoteViews(context.packageName, rowLayout)
+      row.setInt(R.id.daily_widget_task_row, "setBackgroundResource", if (dark) R.drawable.daily_widget_card_dark else R.drawable.daily_widget_card)
+      row.setViewVisibility(R.id.daily_widget_task_icon, if (showIcon) android.view.View.VISIBLE else android.view.View.GONE)
+      // A short name marker is stable across launcher fonts and avoids unsupported RemoteViews tint calls.
+      val name = task.optString("name")
+      val marker = if (name.isNotEmpty()) String(Character.toChars(name.codePointAt(0))) else "+"
+      row.setTextViewText(R.id.daily_widget_task_icon, if (complete) "✓" else marker)
+      row.setTextColor(R.id.daily_widget_task_icon, primary)
+      row.setInt(R.id.daily_widget_task_icon, "setBackgroundResource", if (dark) R.drawable.daily_widget_action_dark else R.drawable.daily_widget_action)
+      row.setContentDescription(R.id.daily_widget_task_icon, name)
+      row.setTextViewText(R.id.daily_widget_task_name, name)
       row.setTextViewText(R.id.daily_widget_task_value, "${if (complete) "✓ " else ""}${format(value)} / ${format(goal)} ${unit(task.optString("unit"), chinese)}")
       row.setTextColor(R.id.daily_widget_task_name, text)
-      row.setTextColor(R.id.daily_widget_task_value, if (complete) accent else secondary)
-      row.setTextColor(R.id.daily_widget_task_add, accent)
+      row.setTextColor(R.id.daily_widget_task_value, if (complete) primary else secondary)
+      row.setTextColor(R.id.daily_widget_task_add, primary)
       row.setInt(R.id.daily_widget_task_add, "setBackgroundResource", if (dark) R.drawable.daily_widget_action_dark else R.drawable.daily_widget_action)
-      row.setInt(R.id.daily_widget_task_finish, "setBackgroundResource", if (dark) R.drawable.daily_widget_action_dark else R.drawable.daily_widget_action)
+      row.setInt(R.id.daily_widget_task_finish, "setBackgroundResource", if (dark) R.drawable.daily_widget_save_dark else R.drawable.daily_widget_save)
       row.setContentDescription(R.id.daily_widget_task_value, if (complete) (if (chinese) "已完成" else "Completed") else "${format(value)} / ${format(goal)}")
       val taskUri = "dailyplus://task/" + Uri.encode(id)
       row.setOnClickPendingIntent(R.id.daily_widget_task_row, openTask(context, taskUri, widgetId * 100 + index * 2 + 1))
@@ -146,30 +181,33 @@ class DailyWidgetProvider : AppWidgetProvider() {
         "resume" -> if (chinese) "继续" else "Resume"
         else -> if (chinese) "开始" else "Start"
       }
-      row.setTextViewText(R.id.daily_widget_task_add, if (countTask) "+" else when (command) {
+      row.setTextViewText(R.id.daily_widget_task_add, if (countTask) "+1" else when (command) {
         "pause" -> if (chinese) "暂停" else "Pause"
         "resume" -> if (chinese) "继续" else "Resume"
         else -> if (chinese) "开始" else "Start"
       })
-      row.setTextViewTextSize(R.id.daily_widget_task_add, TypedValue.COMPLEX_UNIT_SP, if (countTask) 24f else if (chinese) 13f else 11f)
+      row.setTextViewTextSize(R.id.daily_widget_task_add, TypedValue.COMPLEX_UNIT_SP, if (countTask) 18f else if (chinese) 13f else 11f)
+      row.setTextViewText(R.id.daily_widget_task_finish, if (chinese) "保存" else "Save")
       row.setContentDescription(R.id.daily_widget_task_add, "$label ${task.optString("name")}")
       row.setProgressBar(R.id.daily_widget_task_progress, 1000, (value / goal * 1000).toInt().coerceIn(0, 1000), false)
       row.setViewVisibility(R.id.daily_widget_task_finish, if (timer != null) android.view.View.VISIBLE else android.view.View.GONE)
-      row.setTextColor(R.id.daily_widget_task_finish, accent)
+      row.setTextColor(R.id.daily_widget_task_finish, primary)
       row.setContentDescription(R.id.daily_widget_task_finish, (if (chinese) "结束并保存 " else "Finish and save ") + task.optString("name"))
       row.setViewVisibility(R.id.daily_widget_task_timer, if (timer != null) android.view.View.VISIBLE else android.view.View.GONE)
       if (timer != null) {
         val running = timer.optString("status") == "running"
         val elapsed = timer.optDouble("duration").coerceAtLeast(0.0) + if (running && !timer.isNull("start_timestamp")) maxOf(0L, System.currentTimeMillis() - timer.optLong("start_timestamp")) else 0L
         row.setTextViewText(R.id.daily_widget_task_status, if (running) (if (chinese) "计时中" else "Running") else (if (chinese) "已暂停" else "Paused"))
-        row.setTextColor(R.id.daily_widget_task_status, if (running) accent else secondary)
+        row.setTextColor(R.id.daily_widget_task_status, if (running) primary else secondary)
         row.setChronometer(R.id.daily_widget_task_clock, android.os.SystemClock.elapsedRealtime() - elapsed.toLong(), null, running)
         if (!running) {
           val seconds = elapsed.toLong() / 1000
           row.setTextViewText(R.id.daily_widget_task_clock, String.format(Locale.US, "%d:%02d", seconds / 60, seconds % 60))
         }
-        row.setTextColor(R.id.daily_widget_task_clock, if (running) accent else secondary)
+        row.setTextColor(R.id.daily_widget_task_clock, if (running) primary else secondary)
       }
+      row.setFloat(R.id.daily_widget_task_add, "setAlpha", if (available) 1f else 0.4f)
+      row.setFloat(R.id.daily_widget_task_finish, "setAlpha", if (available) 1f else 0.4f)
       row.setBoolean(R.id.daily_widget_task_add, "setEnabled", available)
       row.setBoolean(R.id.daily_widget_task_finish, "setEnabled", available)
       if (available) {
